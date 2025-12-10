@@ -1,15 +1,15 @@
-
 import './App.css'
-// import Signup  from './pages/Signup'
+import AppLayout from './components/AppLayout'
+// import Signup from './pages/Signup'
 // import Login from './pages/Login'
 
 function App() {
   return (
     <>
-     {/* <Signup/> */}
-     
-      {/* <Login/> */}
-     
+      <AppLayout>
+        {/* <Signup /> */}
+        {/* <Login /> */}
+      </AppLayout>
     </>
   )
 }
