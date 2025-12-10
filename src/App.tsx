@@ -1,14 +1,15 @@
 import './App.css'
+// import { Toaster } from "@/components/ui/sonner"
 import AppLayout from './components/AppLayout'
-// import Signup from './pages/Signup'
-// import Login from './pages/Login'
+import ToastButton from './components/Toast'
+
 
 function App() {
   return (
     <>
       <AppLayout>
-        {/* <Signup /> */}
-        {/* <Login /> */}
+        <ToastButton />
+        {/* <Toaster /> */}
       </AppLayout>
     </>
   )
