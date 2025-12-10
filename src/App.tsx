@@ -1,15 +1,16 @@
 import './App.css'
 // import { Toaster } from "@/components/ui/sonner"
 import AppLayout from './components/AppLayout'
-import ToastButton from './components/Toast'
+import Page  from './pages/Demo'  
 
 
 function App() {
   return (
     <>
       <AppLayout>
-        <ToastButton />
-        {/* <Toaster /> */}
+        {/* <h1>Welcome to the demo</h1> */}
+        <Page />
+        
       </AppLayout>
     </>
   )
