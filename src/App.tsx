@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/index";
 import BoardPage from "./pages/BoardPage";
 import NotFound from "./pages/NotFound";
-
+import OrganizationRegister from "./pages/CreateOrganization";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -19,6 +19,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/board" element={<BoardPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/register-organization" element={<OrganizationRegister />} />
+
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

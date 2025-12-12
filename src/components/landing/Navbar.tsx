@@ -23,7 +23,7 @@ const Navbar = () => {
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Features
             </Link>
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/register-organization" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
