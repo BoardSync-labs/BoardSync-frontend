@@ -24,7 +24,7 @@ const Navbar = () => {
               Features
             </Link>
             <Link to="/register-organization" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Pricing
+              register-organization
             </Link>
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Documentation
