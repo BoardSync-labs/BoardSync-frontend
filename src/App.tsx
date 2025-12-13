@@ -1,15 +1,17 @@
-
 import './App.css'
-// import Signup  from './pages/Signup'
-// import Login from './pages/Login'
+// import { Toaster } from "@/components/ui/sonner"
+import AppLayout from './components/AppLayout'
+import Page  from './pages/Demo'  
+
 
 function App() {
   return (
     <>
-     {/* <Signup/> */}
-     
-      {/* <Login/> */}
-     
+      <AppLayout>
+        {/* <h1>Welcome to the demo</h1> */}
+        <Page />
+        
+      </AppLayout>
     </>
   )
 }
