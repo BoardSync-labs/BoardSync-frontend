@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Eye, EyeOff, Check, X } from "lucide-react";
+import { authService } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -14,7 +17,7 @@ const Signup = () => {
     const [error, setError] = useState("");
 
     // Password strength checker
-    const checkPasswordStrength = (password) => {
+    const checkPasswordStrength = (password: string) => {
         const checks = {
             length: password.length >= 8,
             uppercase: /[A-Z]/.test(password),
@@ -29,7 +32,7 @@ const Signup = () => {
     const passwordsMatch =
         formData.password && formData.password === formData.confirmPassword;
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -37,7 +40,7 @@ const Signup = () => {
         if (error) setError("");
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
@@ -69,20 +72,27 @@ const Signup = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Signed up with:", {
+        try {
+            const response = await authService.signup({
                 name: formData.name,
                 email: formData.email,
+                password: formData.password,
             });
+
+            if (response.success) {
+                // Redirect to login page after successful signup
+                navigate('/login');
+            }
+        } catch (err: any) {
+            console.error('Signup error:', err);
+            if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError('Registration failed. Please try again.');
+            }
+        } finally {
             setIsLoading(false);
-            // Replace with actual auth logic:
-            // const { data, error } = await supabase.auth.signUp({
-            //   email: formData.email,
-            //   password: formData.password,
-            //   options: { data: { name: formData.name } }
-            // })
-        }, 1000);
+        }
     };
 
     const PasswordRequirement = ({ met, text }) => (
@@ -106,7 +116,7 @@ const Signup = () => {
                     <p className="text-gray-600">Sign up to get started</p>
                 </div>
 
-                <div className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Error Message */}
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -248,21 +258,20 @@ const Signup = () => {
 
                     {/* Submit Button */}
                     <button
-                        type="button"
-                        onClick={handleSubmit}
+                        type="submit"
                         disabled={isLoading}
                         className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                         {isLoading ? "Creating Account..." : "Sign Up"}
                     </button>
-                </div>
+                </form>
 
                 {/* Login Link */}
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Already have an account?{" "}
                     <button
                         className="text-purple-600 hover:text-purple-700 font-semibold"
-                        onClick={() => console.log("Navigate to login")}
+                        onClick={() => navigate('/login')}
                     >
                         Login
                     </button>

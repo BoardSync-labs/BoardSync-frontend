@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { authService } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+    const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         email: "",
         password: "",
@@ -12,7 +15,7 @@ const Login = () => {
 
     
 //  updates the form state whenever a user types in an input field, keeping all existing values while only changing the field that was edited.
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCredentials({
             ...credentials,
             [e.target.name]: e.target.value,
@@ -21,7 +24,7 @@ const Login = () => {
         if (error) setError("");
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
@@ -33,13 +36,29 @@ const Login = () => {
 
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Logged in with:", credentials);
+        try {
+            const response = await authService.login({
+                email: credentials.email,
+                password: credentials.password,
+            });
+
+            if (response.success) {
+                // Store auth data
+                authService.setAuth(response.access_token, response.user);
+                
+                // Redirect to dashboard or organization creation
+                navigate('/dashboard');
+            }
+        } catch (err: any) {
+            console.error('Login error:', err);
+            if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError('Login failed. Please try again.');
+            }
+        } finally {
             setIsLoading(false);
-            // Replace with actual auth logic:
-            // const { data, error } = await supabase.auth.signInWithPassword(credentials)
-        }, 1000);
+        }
     };
 
     return (
@@ -52,7 +71,7 @@ const Login = () => {
                     <p className="text-gray-600">Sign in to continue to your account</p>
                 </div>
 
-                <div className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Error Message */}
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -122,21 +141,20 @@ const Login = () => {
 
                     {/* Submit Button */}
                     <button
-                        type="button"
-                        onClick={handleSubmit}
+                        type="submit"
                         disabled={isLoading}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? "Logging in..." : "Login"}
                     </button>
-                </div>
+                </form>
 
                 {/* Sign Up Link */}
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Don't have an account?{" "}
                     <button
                         className="text-blue-600 hover:text-blue-700 font-semibold"
-                        onClick={() => console.log("Navigate to signup")}
+                        onClick={() => navigate('/signup')}
                     >
                         Sign Up
                     </button>

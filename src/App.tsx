@@ -7,6 +7,8 @@ import Index from "./pages/index";
 import BoardPage from "./pages/BoardPage";
 import NotFound from "./pages/NotFound";
 import OrganizationRegister from "./pages/CreateOrganization";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -17,6 +19,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/board" element={<BoardPage />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/register-organization" element={<OrganizationRegister />} />
