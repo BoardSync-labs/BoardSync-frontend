@@ -94,7 +94,7 @@ const Login = () => {
                             value={credentials.email}
                             onChange={handleChange}
                             placeholder="you@example.com"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-400"
                             disabled={isLoading}
                         />
                     </div>
@@ -115,7 +115,7 @@ const Login = () => {
                                 value={credentials.password}
                                 onChange={handleChange}
                                 placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition pr-12"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition pr-12 text-gray-900 placeholder-gray-400"
                                 disabled={isLoading}
                             />
                             <button

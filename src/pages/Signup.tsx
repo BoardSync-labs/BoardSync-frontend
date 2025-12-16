@@ -139,7 +139,7 @@ const Signup = () => {
                             value={formData.name}
                             onChange={handleChange}
                             placeholder="John Doe"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-400"
                             disabled={isLoading}
                         />
                     </div>
@@ -159,7 +159,7 @@ const Signup = () => {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="you@example.com"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-400"
                             disabled={isLoading}
                         />
                     </div>
@@ -180,7 +180,7 @@ const Signup = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12 text-gray-900 placeholder-gray-400"
                                 disabled={isLoading}
                             />
                             <button
@@ -232,7 +232,7 @@ const Signup = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12 text-gray-900 placeholder-gray-400"
                                 disabled={isLoading}
                             />
                             <button
