@@ -27,12 +27,12 @@ const CTA = () => {
             and deliver projects faster.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild variant="hero" size="xl">
+            {/* <Button asChild variant="hero" size="xl">
               <Link to="/board">
                 Start for Free
                 <ArrowRight className="w-5 h-5" />
               </Link>
-            </Button>
+            </Button> */}
             <p className="text-sm text-muted-foreground">
               No credit card required • Free forever for small teams
             </p>

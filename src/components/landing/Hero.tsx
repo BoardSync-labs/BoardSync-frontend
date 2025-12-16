@@ -83,10 +83,10 @@ const Hero = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <Button asChild variant="hero" size="xl">
-                <Link to="/board">
+                {/* <Link to="/board">
                   View Demo Board
                   <ArrowRight className="w-5 h-5" />
-                </Link>
+                </Link> */}
               </Button>
               {/* <Button asChild variant="outline" size="xl">
                 <Link to="/board">View Demo Board</Link>
