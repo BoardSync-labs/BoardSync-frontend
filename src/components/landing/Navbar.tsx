@@ -19,7 +19,7 @@ const Navbar = () => {
             <span className="text-xl font-bold">BoardSync</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          {/* <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Features
             </Link>
@@ -29,15 +29,15 @@ const Navbar = () => {
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Documentation
             </Link>
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm">
+            <Button asChild variant="default" size="sm">
              <Link to="/login">Sign In</Link>
             </Button>
-            <Button asChild variant="default" size="sm">
+            {/* <Button asChild variant="default" size="sm">
               <Link to="/board">Try Demo</Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>

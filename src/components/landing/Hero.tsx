@@ -6,36 +6,7 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <div className="w-full">
-      {/* ================================
-          SECTION 1 — WATERMELON INTRO
-         ================================ */}
-      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-[hsl(262,83%,58%)]/20 animate-pulse-slow">
-        
-       {/* Watermelon Bounce Animation */}
-  <motion.div
-  initial={{ scale: 0.8, opacity: 0 }}
-  animate={{ scale: 1, opacity: 1 }}
-  transition={{ duration: 1.2, ease: "easeOut" }}
-  className="mx-auto"
->
-  <div className="circular-watermelon">
-    <div className="inner-circle"></div>
-    <div className="stripes">
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-    </div>
-  </div>
-</motion.div>
-
-  {/* Scroll hint */}
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 1.3 }}
-    className="absolute bottom-10 text-muted-foreground text-sm"
-  >
-  </motion.div>
-      </section>
+     
 
       {/* ================================
           SECTION 2 — ORIGINAL HERO CONTENT
@@ -113,13 +84,13 @@ const Hero = () => {
             >
               <Button asChild variant="hero" size="xl">
                 <Link to="/board">
-                  Get Started Free
+                  View Demo Board
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="xl">
+              {/* <Button asChild variant="outline" size="xl">
                 <Link to="/board">View Demo Board</Link>
-              </Button>
+              </Button> */}
             </motion.div>
           </motion.div>
         </div>
