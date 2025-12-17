@@ -32,13 +32,13 @@ export default function OrganizationDashboard() {
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
-<div className="flex items-center gap-4">
+{/* <div className="flex items-center gap-4">
               <Button asChild variant="ghost" size="icon" className="mr-2">
                 <Link to={`/dashboard`}>
                   <ChevronLeft className="w-5 h-5" />
                 </Link>
               </Button>
-              </div>
+              </div> */}
       {/* Header (same as org dashboard) */}
       <div className="flex items-center justify-between mb-8">
         <div>

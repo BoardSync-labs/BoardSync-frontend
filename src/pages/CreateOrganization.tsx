@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,192 +13,157 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Upload } from "lucide-react";
+import { Trash2, Plus, ArrowLeft } from "lucide-react";
+import { organizationService } from "@/services/organizationService";
+import { useToast } from "@/hooks/use-toast";
 
-
-// -------------------------
-// ZOD Schema
-// -------------------------
+// Updated ZOD Schema
 const orgSchema = z.object({
-  orgName: z.string().min(2, "Organization name is required"),
-  email: z.string().email("Invalid contact email"),
-  website: z.string().optional(),
-  description: z.string().optional(),
-  logo: z.any().optional(),
-  members: z.array(
+  name: z.string().min(3, "Organization name must be at least 3 characters").max(50, "Organization name must be less than 50 characters"),
+  invitations: z.array(
     z.object({
-      email: z.string().email("Invalid email"),
+      email: z.string().email("Invalid email address"),
     })
-  ),
+  ).optional(),
 });
 
 type OrgForm = z.infer<typeof orgSchema>;
 
 export default function OrganizationRegister() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const form = useForm<OrgForm>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
-      orgName: "",
-      email: "",
-      website: "",
-      description: "",
-      logo: null,
-      members: [{ email: "" }], // default 1 member field
+      name: "",
+      invitations: [{ email: "" }], // Start with one email field
     },
   });
 
-  // dynamic members field
+  // Dynamic invitations field array
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "members",
+    name: "invitations",
   });
 
   const onSubmit = async (data: OrgForm) => {
     setLoading(true);
 
     try {
-      console.log("Organization Registered:", data);
+      // Filter out empty email addresses
+      const validInvitations = (data.invitations || [])
+        .filter(invitation => invitation.email.trim() !== "")
+        .map(invitation => ({
+          email: invitation.email.trim(),
+          role: "employee" as const // Default role for all invites
+        }));
 
-      // Redirect after success
-      navigate("/dashboard");
+      const organizationData = {
+        name: data.name.trim(),
+        invitations: validInvitations,
+      };
 
-    } catch (err) {
-      console.error(err);
+      console.log("Submitting organization data:", organizationData);
+
+      const response = await organizationService.createOrganization(organizationData);
+
+      if (response.success) {
+        toast({
+          title: "Organization Created! 🎉",
+          description: `${response.data.name} has been successfully created. Invitations have been sent to team members.`,
+        });
+
+        // Show invitation results
+        const invitationResults = response.data.invitations;
+        if (invitationResults && invitationResults.length > 0) {
+          const successCount = invitationResults.filter(inv => inv.status === 'invitation_sent' || inv.status === 'added_existing_user').length;
+          const failCount = invitationResults.length - successCount;
+
+          toast({
+            title: "Invitation Summary",
+            description: `${successCount} invitations sent successfully${failCount > 0 ? `, ${failCount} failed` : ''}.`,
+            variant: failCount > 0 ? "destructive" : "default",
+          });
+        }
+
+        // Redirect to admin dashboard
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      console.error("Organization creation error:", err);
+      
+      let errorMessage = "Failed to create organization. Please try again.";
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      }
+
+      toast({
+        title: "Creation Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle image upload preview
-  const handleLogoUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => setLogoPreview(reader.result as string);
-    reader.readAsDataURL(file);
+  const addInvitationField = () => {
+    append({ email: "" });
+  };
+
+  const removeInvitationField = (index: number) => {
+    if (fields.length > 1) {
+      remove(index);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-background to-muted/20">
       <Card className="w-full max-w-2xl shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">
-            Register Your Organization
-          </CardTitle>
+        <CardHeader className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/dashboard")}
+              className="p-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <CardTitle className="text-2xl font-bold">
+              Create Organization
+            </CardTitle>
+          </div>
+          <p className="text-muted-foreground">
+            Set up your organization and invite team members to collaborate.
+          </p>
         </CardHeader>
 
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-              {/* --------------------------
-                  LOGO UPLOAD
-              --------------------------- */}
+              {/* Organization Name */}
               <FormField
                 control={form.control}
-                name="logo"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization Logo</FormLabel>
+                    <FormLabel className="text-base font-semibold">Organization Name *</FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-4">
-                        <label className="cursor-pointer">
-                          <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center overflow-hidden border">
-                            {logoPreview ? (
-                              <img
-                                src={logoPreview}
-                                alt="Logo Preview"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Upload className="w-8 h-8 text-muted-foreground" />
-                            )}
-                          </div>
-
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                field.onChange(file);
-                                handleLogoUpload(file);
-                              }
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* ORG NAME */}
-              <FormField
-                control={form.control}
-                name="orgName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. BoardSync Technologies" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* CONTACT EMAIL */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. contact@boardsync.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* WEBSITE */}
-              <FormField
-                control={form.control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website (optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://yourcompany.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* DESCRIPTION */}
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description (optional)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={4}
-                        placeholder="Brief description about your organization..."
+                      <Input 
+                        placeholder="e.g. BoardSync Technologies" 
                         {...field}
+                        disabled={loading}
+                        className="text-base"
                       />
                     </FormControl>
                     <FormMessage />
@@ -207,57 +171,101 @@ export default function OrganizationRegister() {
                 )}
               />
 
-              {/* -------------------------------------
-                    MEMBER EMAIL FIELDS
-              -------------------------------------- */}
+              {/* Team Member Invitations */}
               <div className="space-y-4">
-                <FormLabel className="text-lg font-medium">Team Members</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-base font-semibold">
+                    Invite Team Members (Optional)
+                  </FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addInvitationField}
+                    disabled={loading}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Member
+                  </Button>
+                </div>
 
-                {fields.map((field, index) => (
-                  <div key={field.id} className="flex items-center gap-3">
-                    <FormField
-                      control={form.control}
-                      name={`members.${index}.email`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input placeholder="member@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                <p className="text-sm text-muted-foreground">
+                  Invited members will receive an email with instructions to join your organization as employees.
+                </p>
+
+                <div className="space-y-3">
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="flex items-center gap-3">
+                      <FormField
+                        control={form.control}
+                        name={`invitations.${index}.email`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input 
+                                placeholder="member@example.com" 
+                                {...field}
+                                disabled={loading}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {fields.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeInvitationField(index)}
+                          disabled={loading}
+                          className="shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       )}
-                    />
+                    </div>
+                  ))}
+                </div>
 
-                    {index > 0 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
+                {fields.length === 0 && (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <p className="text-sm">No team members to invite.</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addInvitationField}
+                      className="mt-2"
+                    >
+                      Add first member
+                    </Button>
                   </div>
-                ))}
+                )}
+              </div>
 
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => append({ email: "" })}
+                  onClick={() => navigate("/dashboard")}
+                  disabled={loading}
+                  className="flex-1"
                 >
-                  + Add Member
+                  Cancel
+                </Button>
+                
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  {loading ? "Creating Organization..." : "Create Organization"}
                 </Button>
               </div>
-
-              {/* SUBMIT BUTTON */}
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? "Registering..." : "Register Organization"}
-              </Button>
 
             </form>
           </Form>
