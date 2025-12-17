@@ -5,6 +5,8 @@ import KanbanBoard from "@/components/board/KanbanBoard";
 import BoardHeader from "@/components/board/BoardHeader";
 import { Board } from "@/types/board";
 
+
+
 export default function ProjectDashboard() {
   const { orgId, projectId } = useParams();
 
@@ -23,6 +25,7 @@ export default function ProjectDashboard() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
 
+            
       {/* Board Header */}
       <BoardHeader board={board} orgId={orgId!} />
 
