@@ -1,7 +1,7 @@
 "use client";
 
 import { useNavigate } from "react-router-dom";
-import { Plus, Building2 } from "lucide-react";
+import { Plus, Building2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,12 +10,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { authService } from "@/services/authService";
+import { useEffect, useState } from "react";
 
 // TEMP mock data (replace with API later)
 const organizations = [
   {
     id: "1",
-    name: "BoardSync Technologies",
+    name: "BoardSync Technologies", 
     members: 8,
   },
   {
@@ -27,6 +29,30 @@ const organizations = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = authService.getUser();
+    if (!userData) {
+      navigate('/login');
+      return;
+    }
+    
+    // Ensure only admins can access this page
+    if (userData.user_type !== 'admin') {
+      navigate('/member-dashboard'); // Redirect members to member dashboard
+      return;
+    }
+    
+    setUser(userData);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
+
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-background px-6 py-8">
@@ -34,16 +60,23 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Your Organizations</h1>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-muted-foreground">
-            Manage or create a new organization
+            Welcome back, {user.name}! Manage your organizations
           </p>
         </div>
 
-        <Button onClick={() => navigate("/register-organization")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Create Organization
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={() => navigate("/register-organization")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Organization
+          </Button>
+          
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Organization List */}
@@ -64,7 +97,7 @@ export default function Dashboard() {
             <Card
               key={org.id}
               className="cursor-pointer hover:shadow-lg transition"
-              onClick={() => navigate(`/organization/${org.id}/`)}
+              onClick={() => navigate(`/organization/${org.id}/admin`)}
             >
               <CardHeader>
                 <CardTitle>{org.name}</CardTitle>
@@ -76,7 +109,7 @@ export default function Dashboard() {
               <CardContent>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Building2 className="w-4 h-4" />
-                  Open organization
+                  Manage organization
                 </div>
               </CardContent>
             </Card>

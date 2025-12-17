@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Check, X } from "lucide-react";
+import { Eye, EyeOff, Check, X, User, Shield } from "lucide-react";
 import { authService } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 
@@ -10,13 +10,13 @@ const Signup = () => {
         email: "",
         password: "",
         confirmPassword: "",
+        user_type: "member" as "admin" | "member", // Default to member
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Password strength checker
     const checkPasswordStrength = (password: string) => {
         const checks = {
             length: password.length >= 8,
@@ -40,11 +40,17 @@ const Signup = () => {
         if (error) setError("");
     };
 
+    const handleRoleSelect = (role: "admin" | "member") => {
+        setFormData({
+            ...formData,
+            user_type: role,
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
-        // Validation
         if (
             !formData.name ||
             !formData.email ||
@@ -77,10 +83,10 @@ const Signup = () => {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,
+                user_type: formData.user_type,
             });
 
             if (response.success) {
-                // Redirect to login page after successful signup
                 navigate('/login');
             }
         } catch (err: any) {
@@ -117,14 +123,56 @@ const Signup = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Error Message */}
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
 
-                    {/* Name */}
+                    {/* Account Type Selection */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Account Type
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => handleRoleSelect("member")}
+                                className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition ${
+                                    formData.user_type === "member"
+                                        ? "border-purple-500 bg-purple-50 text-purple-700"
+                                        : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                                }`}
+                                disabled={isLoading}
+                            >
+                                <User size={18} />
+                                <span className="font-medium">Member</span>
+                            </button>
+                            
+                            <button
+                                type="button"
+                                onClick={() => handleRoleSelect("admin")}
+                                className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition ${
+                                    formData.user_type === "admin"
+                                        ? "border-purple-500 bg-purple-50 text-purple-700"
+                                        : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                                }`}
+                                disabled={isLoading}
+                            >
+                                <Shield size={18} />
+                                <span className="font-medium">Admin</span>
+                            </button>
+                        </div>
+                        
+                        <p className="mt-2 text-xs text-gray-500">
+                            {formData.user_type === "admin" 
+                                ? "Can create and manage organizations" 
+                                : "Can join organizations via invites"
+                            }
+                        </p>
+                    </div>
+
+                    {/* Rest of the form fields remain the same */}
                     <div>
                         <label
                             htmlFor="name"
@@ -144,7 +192,6 @@ const Signup = () => {
                         />
                     </div>
 
-                    {/* Email */}
                     <div>
                         <label
                             htmlFor="email"
@@ -164,7 +211,6 @@ const Signup = () => {
                         />
                     </div>
 
-                    {/* Password */}
                     <div>
                         <label
                             htmlFor="password"
@@ -193,7 +239,6 @@ const Signup = () => {
                             </button>
                         </div>
 
-                        {/* Password Requirements */}
                         {formData.password && (
                             <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-2">
                                 <PasswordRequirement
@@ -216,7 +261,6 @@ const Signup = () => {
                         )}
                     </div>
 
-                    {/* Confirm Password */}
                     <div>
                         <label
                             htmlFor="confirmPassword"
@@ -246,8 +290,7 @@ const Signup = () => {
                         </div>
                         {formData.confirmPassword && (
                             <p
-                                className={`mt-2 text-sm ${passwordsMatch ? "text-green-600" : "text-red-600"
-                                    }`}
+                                className={`mt-2 text-sm ${passwordsMatch ? "text-green-600" : "text-red-600"}`}
                             >
                                 {passwordsMatch
                                     ? "✓ Passwords match"
@@ -256,7 +299,6 @@ const Signup = () => {
                         )}
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isLoading}
@@ -266,7 +308,6 @@ const Signup = () => {
                     </button>
                 </form>
 
-                {/* Login Link */}
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Already have an account?{" "}
                     <button
@@ -274,18 +315,6 @@ const Signup = () => {
                         onClick={() => navigate('/login')}
                     >
                         Login
-                    </button>
-                </p>
-
-                {/* Terms */}
-                <p className="text-center text-xs text-gray-500 mt-4">
-                    By signing up, you agree to our{" "}
-                    <button className="text-purple-600 hover:underline">
-                        Terms of Service
-                    </button>{" "}
-                    and{" "}
-                    <button className="text-purple-600 hover:underline">
-                        Privacy Policy
                     </button>
                 </p>
             </div>

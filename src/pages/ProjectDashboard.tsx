@@ -3,7 +3,7 @@
 import { useParams } from "react-router-dom";
 import KanbanBoard from "@/components/board/KanbanBoard";
 import BoardHeader from "@/components/board/BoardHeader";
-import { Board } from "@/types/board";
+import { type Board } from "@/types/board";
 
 
 
@@ -20,6 +20,8 @@ export default function ProjectDashboard() {
     name: `Project ${projectId}`,
     description: "",
     members: [],
+    columns: [],
+    createdAt: ""
   };
 
   return (

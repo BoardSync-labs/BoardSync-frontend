@@ -39,11 +39,6 @@ export default function Dashboard() {
             Manage or create a new organization
           </p>
         </div>
-
-        <Button onClick={() => navigate("/register-organization")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Create Organization
-        </Button>
       </div>
 
       {/* Organization List */}
