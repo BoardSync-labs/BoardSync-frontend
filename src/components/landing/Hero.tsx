@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import Threads from "@/components/Threads";
+import Ribbons from "@/components/Ribbons";
 const Hero = () => {
   return (
     <div className="w-full">
@@ -12,6 +13,7 @@ const Hero = () => {
           SECTION 2 — ORIGINAL HERO CONTENT
          ================================ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
         
         {/* Background gradient orbs */}
         <div className="absolute inset-0 overflow-hidden">
@@ -31,6 +33,15 @@ const Hero = () => {
             backgroundSize: "60px 60px",
           }}
         />
+        
+          <div className="absolute inset-0 z-0 pointer-events-none ">
+          <Threads
+            color={[0xC084FC, 0x60A5FA, 0x34D399]}
+            amplitude={1}
+            distance={-0.5}
+            enableMouseInteraction
+          />
+        </div>
 
         <div className="container relative z-10 px-4 py-20">
           <motion.div

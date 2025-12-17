@@ -5,58 +5,46 @@ import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
-        user_type: "member" as "admin" | "member", // Default to member
+        user_type: "member" as "admin" | "member",
     });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const checkPasswordStrength = (password: string) => {
-        const checks = {
-            length: password.length >= 8,
-            uppercase: /[A-Z]/.test(password),
-            lowercase: /[a-z]/.test(password),
-            number: /[0-9]/.test(password),
-            special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        };
-        return checks;
-    };
+    const checkPasswordStrength = (password: string) => ({
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    });
 
     const passwordChecks = checkPasswordStrength(formData.password);
     const passwordsMatch =
         formData.password && formData.password === formData.confirmPassword;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
         if (error) setError("");
     };
 
     const handleRoleSelect = (role: "admin" | "member") => {
-        setFormData({
-            ...formData,
-            user_type: role,
-        });
+        setFormData({ ...formData, user_type: role });
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 
-        if (
-            !formData.name ||
-            !formData.email ||
-            !formData.password ||
-            !formData.confirmPassword
-        ) {
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
             setError("Please fill in all fields");
             return;
         }
@@ -87,21 +75,16 @@ const Signup = () => {
             });
 
             if (response.success) {
-                navigate('/login');
+                navigate("/login");
             }
         } catch (err: any) {
-            console.error('Signup error:', err);
-            if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else {
-                setError('Registration failed. Please try again.');
-            }
+            setError(err.response?.data?.message || "Registration failed");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const PasswordRequirement = ({ met, text }) => (
+    const PasswordRequirement = ({ met, text }: { met: boolean; text: string }) => (
         <div className="flex items-center gap-2 text-sm">
             {met ? (
                 <Check size={16} className="text-green-500" />
@@ -113,7 +96,7 @@ const Signup = () => {
     );
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
                 <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-800 mb-2">
@@ -129,191 +112,126 @@ const Signup = () => {
                         </div>
                     )}
 
-                    {/* Account Type Selection */}
+                    {/* Account Type */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">
                             Account Type
                         </label>
+
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 type="button"
                                 onClick={() => handleRoleSelect("member")}
                                 className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition ${
                                     formData.user_type === "member"
-                                        ? "border-purple-500 bg-purple-50 text-purple-700"
-                                        : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                                        : "border-gray-200 bg-gray-50 text-gray-600"
                                 }`}
-                                disabled={isLoading}
                             >
-                                <User size={18} />
-                                <span className="font-medium">Member</span>
+                                <User size={18} /> Member
                             </button>
-                            
+
                             <button
                                 type="button"
                                 onClick={() => handleRoleSelect("admin")}
                                 className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition ${
                                     formData.user_type === "admin"
-                                        ? "border-purple-500 bg-purple-50 text-purple-700"
-                                        : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
+                                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                                        : "border-gray-200 bg-gray-50 text-gray-600"
                                 }`}
-                                disabled={isLoading}
                             >
-                                <Shield size={18} />
-                                <span className="font-medium">Admin</span>
+                                <Shield size={18} /> Admin
                             </button>
                         </div>
-                        
+
                         <p className="mt-2 text-xs text-gray-500">
-                            {formData.user_type === "admin" 
-                                ? "Can create and manage organizations" 
-                                : "Can join organizations via invites"
-                            }
+                            {formData.user_type === "admin"
+                                ? "Can create and manage organizations"
+                                : "Can join organizations via invites"}
                         </p>
                     </div>
 
-                    {/* Rest of the form fields remain the same */}
-                    <div>
-                        <label
-                            htmlFor="name"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Full Name
-                        </label>
+                    {/* Name */}
+                    <input
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+
+                    {/* Email */}
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+
+                    {/* Password */}
+                    <div className="relative">
                         <input
-                            id="name"
-                            type="text"
-                            name="name"
-                            value={formData.name}
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
                             onChange={handleChange}
-                            placeholder="John Doe"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-400"
-                            disabled={isLoading}
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-12"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                            {showPassword ? <EyeOff /> : <Eye />}
+                        </button>
                     </div>
 
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Email
-                        </label>
+                    {formData.password && (
+                        <div className="bg-gray-50 p-3 rounded-lg space-y-2">
+                            <PasswordRequirement met={passwordChecks.length} text="At least 8 characters" />
+                            <PasswordRequirement met={passwordChecks.uppercase} text="One uppercase letter" />
+                            <PasswordRequirement met={passwordChecks.lowercase} text="One lowercase letter" />
+                            <PasswordRequirement met={passwordChecks.number} text="One number" />
+                        </div>
+                    )}
+
+                    {/* Confirm Password */}
+                    <div className="relative">
                         <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            value={formData.email}
+                            type={showConfirmPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={formData.confirmPassword}
                             onChange={handleChange}
-                            placeholder="you@example.com"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-400"
-                            disabled={isLoading}
+                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-12"
                         />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700 mb-2"
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
                         >
-                            Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12 text-gray-900 placeholder-gray-400"
-                                disabled={isLoading}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                disabled={isLoading}
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-
-                        {formData.password && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-2">
-                                <PasswordRequirement
-                                    met={passwordChecks.length}
-                                    text="At least 8 characters"
-                                />
-                                <PasswordRequirement
-                                    met={passwordChecks.uppercase}
-                                    text="One uppercase letter"
-                                />
-                                <PasswordRequirement
-                                    met={passwordChecks.lowercase}
-                                    text="One lowercase letter"
-                                />
-                                <PasswordRequirement
-                                    met={passwordChecks.number}
-                                    text="One number"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="confirmPassword"
-                            className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                            Confirm Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                id="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition pr-12 text-gray-900 placeholder-gray-400"
-                                disabled={isLoading}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                disabled={isLoading}
-                            >
-                                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                        {formData.confirmPassword && (
-                            <p
-                                className={`mt-2 text-sm ${passwordsMatch ? "text-green-600" : "text-red-600"}`}
-                            >
-                                {passwordsMatch
-                                    ? "✓ Passwords match"
-                                    : "✗ Passwords do not match"}
-                            </p>
-                        )}
+                            {showConfirmPassword ? <EyeOff /> : <Eye />}
+                        </button>
                     </div>
 
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg"
                     >
                         {isLoading ? "Creating Account..." : "Sign Up"}
                     </button>
                 </form>
 
-                <p className="text-center text-sm text-gray-600 mt-6">
+                <p className="text-center text-black text-sm mt-6">
                     Already have an account?{" "}
                     <button
-                        className="text-purple-600 hover:text-purple-700 font-semibold"
-                        onClick={() => navigate('/login')}
-                    >
+                        className="text-blue-600 font-semibold"
+                        onClick={() => navigate("/login")}
+                    >   
                         Login
                     </button>
                 </p>
