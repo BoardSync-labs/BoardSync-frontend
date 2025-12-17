@@ -1,13 +1,14 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task } from '@/types/board';
-import { Calendar, MessageSquare, Paperclip } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
   onClick?: () => void;
+  onDelete?: (taskId: string) => void; // ✅ Add delete callback
 }
 
 const priorityColors = {
@@ -17,7 +18,7 @@ const priorityColors = {
   urgent: 'bg-destructive/20 text-destructive',
 };
 
-const TaskCard = ({ task, onClick }: TaskCardProps) => {
+const TaskCard = ({ task, onClick, onDelete }: TaskCardProps) => {
   const {
     attributes,
     listeners,
@@ -40,10 +41,23 @@ const TaskCard = ({ task, onClick }: TaskCardProps) => {
       {...listeners}
       onClick={onClick}
       className={cn(
-        'group bg-card border border-border rounded-lg p-4 cursor-grab active:cursor-grabbing hover-lift',
+        'group relative bg-card border border-border rounded-lg p-4 cursor-grab active:cursor-grabbing hover-lift',
         isDragging && 'opacity-50 shadow-xl ring-2 ring-primary'
       )}
     >
+      {/* Delete button */}
+      {onDelete && (
+        <button
+          className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent opening modal
+            onDelete(task.id);
+          }}
+        >
+          ✕
+        </button>
+      )}
+
       {/* Tags */}
       {task.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -78,10 +92,12 @@ const TaskCard = ({ task, onClick }: TaskCardProps) => {
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
         <div className="flex items-center gap-3">
           {/* Priority */}
-          <span className={cn(
-            'px-2 py-0.5 text-xs font-medium rounded capitalize',
-            priorityColors[task.priority]
-          )}>
+          <span
+            className={cn(
+              'px-2 py-0.5 text-xs font-medium rounded capitalize',
+              priorityColors[task.priority]
+            )}
+          >
             {task.priority}
           </span>
 
