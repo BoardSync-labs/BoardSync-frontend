@@ -47,11 +47,11 @@ const BoardHeader = ({ board }: BoardHeaderProps) => {
             {/* Left side */}
             
             <div className="flex items-center gap-4">
-              <Button asChild variant="ghost" size="icon" className="mr-2">
+              {/* <Button asChild variant="ghost" size="icon" className="mr-2">
                 <Link to={`/organization/${orgId}`}>
-                  <ChevronLeft className="w-5 h-5" />
+                  < className="w-5 h-5" />
                 </Link>
-              </Button>
+              </Button> */}
               
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-[hsl(262,83%,58%)] flex items-center justify-center">
