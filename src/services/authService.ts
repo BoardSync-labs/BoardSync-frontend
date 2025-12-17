@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -13,6 +13,7 @@ export interface SignupData {
   name: string;
   email: string;
   password: string;
+  user_type: 'admin' | 'member';
 }
 
 export interface LoginData {
@@ -25,20 +26,21 @@ export interface LoginResponse {
   message: string;
   access_token: string;
   user: {
-    user_id: number;
+    user_id: string;
     name: string;
     email: string;
+    user_type: 'admin' | 'member';
   };
 }
 
 export const authService = {
   async signup(data: SignupData) {
-    const response = await api.post('/auth/signup', data);
+    const response = await api.post('/auth/user/signup', data);
     return response.data;
   },
 
   async login(data: LoginData): Promise<LoginResponse> {
-    const response = await api.post('/auth/login', data);
+    const response = await api.post('/auth/user/login', data);
     return response.data;
   },
 
@@ -63,5 +65,15 @@ export const authService = {
 
   isAuthenticated() {
     return !!this.getToken();
+  },
+
+  isAdmin() {
+    const user = this.getUser();
+    return user?.user_type === 'admin';
+  },
+
+  isMember() {
+    const user = this.getUser();
+    return user?.user_type === 'member';
   },
 };

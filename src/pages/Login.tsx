@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User, Shield } from "lucide-react";
 import { authService } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 
@@ -13,14 +13,11 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    
-//  updates the form state whenever a user types in an input field, keeping all existing values while only changing the field that was edited.
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCredentials({
             ...credentials,
             [e.target.name]: e.target.value,
         });
-        // Clear error when user starts typing
         if (error) setError("");
     };
 
@@ -28,7 +25,6 @@ const Login = () => {
         e.preventDefault();
         setError("");
 
-        // Basic validation
         if (!credentials.email || !credentials.password) {
             setError("Please fill in all fields");
             return;
@@ -43,11 +39,14 @@ const Login = () => {
             });
 
             if (response.success) {
-                // Store auth data
                 authService.setAuth(response.access_token, response.user);
                 
-                // Redirect to dashboard or organization creation
-                navigate('/dashboard');
+                // Redirect based on user type
+                if (response.user.user_type === 'admin') {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/member-dashboard');
+                }
             }
         } catch (err: any) {
             console.error('Login error:', err);
@@ -71,15 +70,28 @@ const Login = () => {
                     <p className="text-gray-600">Sign in to continue to your account</p>
                 </div>
 
+                {/* User Type Info */}
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800 font-medium mb-2">Account Types:</p>
+                    <div className="space-y-2 text-xs">
+                        <div className="flex items-center gap-2 text-blue-700">
+                            <Shield size={14} />
+                            <span><strong>Admin:</strong> Create & manage organizations</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-blue-700">
+                            <User size={14} />
+                            <span><strong>Member:</strong> Join organizations via invites</span>
+                        </div>
+                    </div>
+                </div>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Error Message */}
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
 
-                    {/* Email */}
                     <div>
                         <label
                             htmlFor="email"
@@ -99,7 +111,6 @@ const Login = () => {
                         />
                     </div>
 
-                    {/* Password */}
                     <div>
                         <label
                             htmlFor="password"
@@ -129,7 +140,6 @@ const Login = () => {
                         </div>
                     </div>
 
-                    {/* Forgot Password */}
                     <div className="flex justify-end">
                         <button
                             type="button"
@@ -139,7 +149,6 @@ const Login = () => {
                         </button>
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isLoading}
@@ -149,7 +158,6 @@ const Login = () => {
                     </button>
                 </form>
 
-                {/* Sign Up Link */}
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Don't have an account?{" "}
                     <button
