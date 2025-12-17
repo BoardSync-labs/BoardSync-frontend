@@ -11,7 +11,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-// TEMP mock data (replace with API later)
 const organizations = [
   {
     id: "1",
